@@ -20,8 +20,12 @@ class CheckRole
     }
 
     $user = Auth::user();
-    if (!in_array($user->role->name, $roles)) {
+    $userRole = $user->role?->name ?? null;
+
+    if (!$userRole || !in_array($userRole, $roles)) {
       abort(403, 'Unauthorized.');
     }
+
+    return $next($request);
   }
 }

@@ -14,7 +14,7 @@ Route::get('/', function () {
   return view('welcome');
 });
 
-// dashboard 
+// dashboard
 Route::get('/dashboard', function () {
   return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -25,11 +25,11 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     return view('admin');
   })->name('dashboard');
 
-  // Route untuk user management
+  // User management
   Route::resource('users', AdminUserController::class);
 });
 
-// Route untuk Kasir
+// Kasir
 Route::middleware(['auth', 'role:Kasir'])->group(function () {
   Route::get('/cashier', function () {
     return view('cashier');
