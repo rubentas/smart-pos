@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\AdminUserController;
-use App\Http\Controllers\ProfileController; // <-- TAMBAHKAN INI
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +26,8 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
   Route::get('/dashboard', function () {
     return view('admin');
   })->name('dashboard');
+  Route::resource('categories', CategoryController::class);
+  Route::resource('products', ProductController::class);
 
   // User management
   Route::resource('users', AdminUserController::class);
