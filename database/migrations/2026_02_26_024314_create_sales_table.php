@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('sales', function (Blueprint $table) {
+      $table->id();
+      $table->string('invoice_no')->unique();
+      $table->foreignId('user_id')->constrained()->onDelete('restrict');
+      $table->decimal('subtotal', 15, 2)->default(0);
+      $table->decimal('discount', 15, 2)->default(0);
+      $table->decimal('tax', 15, 2)->default(0);
+      $table->decimal('total', 15, 2)->default(0);
+      $table->enum('payment_method', ['cash', 'transfer', 'qris'])->default('cash');
+      $table->string('payment_status')->default('paid');
+      $table->date('date');
+      $table->timestamps();
+
+      // Index untuk pencarian
+      $table->index('invoice_no');
+      $table->index('date');
+    });
+  }
+
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('sales');
+  }
+};
