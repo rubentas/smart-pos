@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReturnController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SupplierController;
@@ -58,6 +59,15 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
   // Returns
   Route::resource('returns', ReturnController::class);
   Route::get('returns/create-from-sale/{saleId}', [ReturnController::class, 'createFromSale'])->name('returns.create-from-sale');
+
+  // Reports
+  Route::prefix('reports')->name('reports.')->group(function () {
+    Route::get('/', [ReportController::class, 'index'])->name('index');
+    Route::get('/sales', [ReportController::class, 'sales'])->name('sales');
+    Route::get('/purchases', [ReportController::class, 'purchases'])->name('purchases');
+    Route::get('/stock', [ReportController::class, 'stock'])->name('stock');
+    Route::get('/profit-loss', [ReportController::class, 'profitLoss'])->name('profit-loss');
+  });
 });
 
 // Rute untuk kasir
