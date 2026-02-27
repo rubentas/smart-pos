@@ -34,4 +34,9 @@ class Purchase extends Model
   {
     return $this->hasMany(PurchaseDetail::class);
   }
+
+  public function branch()
+  {
+    return $this->belongsTo(Branch::class);
+  }
 }

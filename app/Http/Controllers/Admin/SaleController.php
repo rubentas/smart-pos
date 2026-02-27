@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Sale;
 use App\Models\Product;
+use App\Models\Sale;
 use App\Models\StockLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class SaleController extends Controller
 {
@@ -18,6 +19,7 @@ class SaleController extends Controller
   public function index(Request $request)
   {
     $query = Sale::with('user', 'details.product')
+      ->where('branch_id', session('active_branch'))
       ->orderBy('created_at', 'desc');
 
     // Filter by date range
@@ -51,6 +53,7 @@ class SaleController extends Controller
   {
     // Ambil produk dengan stok > 0 untuk ditampilkan di POS
     $products = Product::where('stock', '>', 0)
+      ->where('branch_id', session('active_branch'))
       ->with('category')
       ->orderBy('name')
       ->get();
@@ -102,6 +105,7 @@ class SaleController extends Controller
     try {
       // Simpan ke tabel sales
       $sale = Sale::create([
+        'branch_id' => session('active_branch'),
         'invoice_no' => $invoiceNo,
         'user_id' => Auth::id(),
         'subtotal' => $subtotal,

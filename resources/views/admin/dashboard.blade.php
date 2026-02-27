@@ -177,92 +177,28 @@
 @push('scripts')
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    (function() {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initChart);
-      } else {
-        initChart();
-      }
-
-      function initChart() {
-        const canvas = document.getElementById('salesChart');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-
-        if (window.salesChart) {
-          window.salesChart.destroy();
-        }
-
-        // Data 7 hari terakhir
-        const labels = [];
-        const data = [];
-
-        @for ($i = 6; $i >= 0; $i--)
-          @php
-            $date = now()->subDays($i)->format('Y-m-d');
-            $total = \App\Models\Sale::whereDate('created_at', $date)->sum('total');
-          @endphp
-          labels.push('{{ now()->subDays($i)->format('D') }}');
-          data.push({{ $total }});
-        @endfor
-
-        window.salesChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Penjualan',
-              data: data,
-              borderColor: '#3b82f6',
-              backgroundColor: (context) => {
-                const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
-                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
-                return gradient;
-              },
-              borderWidth: 3,
-              tension: 0.4,
-              fill: true,
-              pointBackgroundColor: '#ffffff',
-              pointBorderColor: '#3b82f6',
-              pointBorderWidth: 2,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false
-              },
-              tooltip: {
-                callbacks: {
-                  label: (ctx) => 'Rp ' + ctx.parsed.y.toLocaleString('id-ID')
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: '#f1f5f9'
-                },
-                ticks: {
-                  callback: (val) => 'Rp ' + (val / 1000000) + 'M'
-                }
-              },
-              x: {
-                grid: {
-                  display: false
-                }
-              }
-            }
+    new Chart(document.getElementById('salesChart'), {
+      type: 'line',
+      data: {
+        labels: @json($labels),
+        datasets: [{
+          label: 'Penjualan',
+          data: @json($values),
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
           }
-        });
+        }
       }
-    })();
+    });
   </script>
 @endpush

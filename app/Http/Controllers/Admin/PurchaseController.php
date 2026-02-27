@@ -3,27 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
-use App\Models\Product;
-use App\Models\Supplier;
 use App\Models\StockLog;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class PurchaseController extends Controller
 {
   public function index()
   {
-    $purchases = Purchase::with(['supplier', 'user'])->latest()->paginate(10);
+    $purchases = Purchase::with('supplier')
+      ->where('branch_id', Session::get('active_branch'))
+      ->latest()
+      ->paginate(15);
     return view('admin.purchases.index', compact('purchases'));
   }
 
   public function create()
   {
     $suppliers = Supplier::all();
-    $products = Product::all();
+    $products = Product::where('branch_id', session('active_branch'))->get();
     return view('admin.purchases.create', compact('suppliers', 'products'));
   }
 
@@ -43,6 +47,7 @@ class PurchaseController extends Controller
     DB::transaction(function () use ($request, $products) {
       // Simpan purchase
       $purchase = Purchase::create([
+        'branch_id' => session('active_branch'),
         'invoice_no' => $request->invoice_no,
         'supplier_id' => $request->supplier_id,
         'user_id' => Auth::id(),

@@ -36,6 +36,7 @@ class ReportController extends Controller
 
     // Data penjualan
     $sales = Sale::with('user', 'details.product')
+      ->where('branch_id', session('active_branch'))
       ->whereBetween('date', [$startDate, $endDate])
       ->orderBy('date', 'desc')
       ->get();
@@ -48,14 +49,16 @@ class ReportController extends Controller
     });
 
     // Grafik harian
-    $dailySales = Sale::whereBetween('date', [$startDate, $endDate])
+    $dailySales = Sale::where('branch_id', session('active_branch'))
+      ->whereBetween('date', [$startDate, $endDate])
       ->select(DB::raw('DATE(date) as date'), DB::raw('SUM(total) as total'))
       ->groupBy('date')
       ->orderBy('date')
       ->get();
 
     // Metode pembayaran
-    $paymentMethods = Sale::whereBetween('date', [$startDate, $endDate])
+    $paymentMethods = Sale::where('branch_id', session('active_branch'))
+      ->whereBetween('date', [$startDate, $endDate])
       ->select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('SUM(total) as total'))
       ->groupBy('payment_method')
       ->get();
@@ -64,6 +67,7 @@ class ReportController extends Controller
     $topProducts = DB::table('sale_details')
       ->join('products', 'sale_details.product_id', '=', 'products.id')
       ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+      ->where('sales.branch_id', session('active_branch'))
       ->whereBetween('sales.date', [$startDate, $endDate])
       ->select('products.name', DB::raw('SUM(sale_details.quantity) as total_qty'), DB::raw('SUM(sale_details.subtotal) as total_sales'))
       ->groupBy('products.id', 'products.name')

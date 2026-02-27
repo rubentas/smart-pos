@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
@@ -33,9 +35,7 @@ Route::middleware('auth')->group(function () {
 // Rute untuk admin
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
   // Dashboard
-  Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-  })->name('dashboard');
+  Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
   // Users
   Route::resource('users', AdminUserController::class);
@@ -68,6 +68,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/stock', [ReportController::class, 'stock'])->name('stock');
     Route::get('/profit-loss', [ReportController::class, 'profitLoss'])->name('profit-loss');
   });
+
+  // BRANCHES - TAMBAHKAN INI
+  Route::resource('branches', BranchController::class);
 });
 
 // Rute untuk kasir

@@ -155,6 +155,12 @@
           <span>Retur Barang</span>
         </a>
 
+        <a href="{{ route('admin.branches.index') }}"
+          class="flex items-center space-x-3 px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.branches.*') ? 'bg-blue-600 text-white font-medium shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+          <i class="fas fa-store-alt w-5 text-center"></i>
+          <span>Cabang</span>
+        </a>
+
         <p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mt-6 mb-2">Sistem</p>
 
         <a href="{{ route('profile.edit') }}"

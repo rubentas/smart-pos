@@ -36,4 +36,9 @@ class Product extends Model
   {
     return $this->hasMany(ReturnDetail::class);
   }
+
+  public function branch()
+  {
+    return $this->belongsTo(Branch::class);
+  }
 }

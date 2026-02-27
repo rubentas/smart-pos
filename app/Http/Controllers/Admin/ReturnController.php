@@ -19,6 +19,9 @@ class ReturnController extends Controller
   public function index(Request $request)
   {
     $query = Returns::with('sale', 'user', 'details.product')
+      ->whereHas('sale', function ($q) {
+        $q->where('branch_id', session('active_branch'));
+      })
       ->orderBy('created_at', 'desc');
 
     // Filter by date range
@@ -42,6 +45,7 @@ class ReturnController extends Controller
   public function create()
   {
     $sales = Sale::with('user', 'details.product')
+      ->where('branch_id', session('active_branch'))
       ->whereDate('created_at', today())
       ->orderBy('created_at', 'desc')
       ->get();
@@ -54,7 +58,9 @@ class ReturnController extends Controller
    */
   public function createFromSale($saleId)
   {
-    $sale = Sale::with('details.product', 'user')->findOrFail($saleId);
+    $sale = Sale::with('details.product', 'user')
+      ->where('branch_id', session('active_branch'))
+      ->findOrFail($saleId);
 
     // Cek apakah sudah pernah diretur?
     $existingReturns = Returns::where('sale_id', $saleId)->get();

@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
   public function index()
   {
-    $products = Product::with('category')->paginate(10);
+    $products = Product::with('category', 'supplier')
+      ->where('branch_id', session('active_branch'))
+      ->orderBy('name')
+      ->paginate(15);
     return view('admin.products.index', compact('products'));
   }
 
@@ -33,7 +37,16 @@ class ProductController extends Controller
       'min_stock' => 'required|integer|min:0',
     ]);
 
-    Product::create($request->all());
+    $product = Product::create([
+      'branch_id' => session('active_branch'),
+      'category_id' => $request->category_id,
+      'name' => $request->name,
+      'barcode' => $request->barcode,
+      'purchase_price' => $request->purchase_price,
+      'selling_price' => $request->selling_price,
+      'stock' => $request->stock,
+      'min_stock' => $request->min_stock,
+    ]);
 
     return redirect()->route('admin.products.index')
       ->with('success', 'Produk berhasil ditambahkan');

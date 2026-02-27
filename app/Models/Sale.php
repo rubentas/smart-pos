@@ -45,4 +45,9 @@ class Sale extends Model
   {
     return $this->hasMany(ReturnModel::class);
   }
+
+  public function branch()
+  {
+    return $this->belongsTo(Branch::class);
+  }
 }
