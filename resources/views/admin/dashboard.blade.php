@@ -1,4 +1,4 @@
-@extends('admin')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard')
 @section('subtitle', 'Selamat datang kembali, ' . Auth::user()->name)

@@ -1,30 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tambah Pembelian - Smart POS</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+@section('page_title', 'Tambah Pembelian')
 
-<body class="bg-gray-100">
-  <nav class="bg-white shadow-lg p-4">
-    <div class="container mx-auto flex justify-between">
-      <h1 class="text-xl font-bold">Smart POS - Tambah Pembelian</h1>
-      <div>
-        <span class="mr-4">{{ Auth::user()->name }} ({{ Auth::user()->role->name }})</span>
-        <a href="{{ route('admin.dashboard') }}" class="mr-4 text-blue-500">Dashboard</a>
-        <a href="{{ route('admin.purchases.index') }}" class="mr-4 text-blue-500">Pembelian</a>
-        <form method="POST" action="{{ route('logout') }}" class="inline">
-          @csrf
-          <button type="submit" class="text-red-500">Logout</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-
+@section('content')
   <div class="container mx-auto p-6">
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-2xl font-bold mb-6">Tambah Pembelian Baru</h2>
@@ -206,6 +184,4 @@
       }
     });
   </script>
-</body>
-
-</html>
+@endsection

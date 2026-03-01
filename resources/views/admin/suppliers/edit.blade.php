@@ -1,29 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.admin')
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Supplier - Smart POS</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@section('page_title', 'Edit Supplier')
 
-<body class="bg-gray-100">
-  <nav class="bg-white shadow-lg p-4">
-    <div class="container mx-auto flex justify-between">
-      <h1 class="text-xl font-bold">Smart POS - Edit Supplier</h1>
-      <div>
-        <span class="mr-4">{{ Auth::user()->name }} ({{ Auth::user()->role->name }})</span>
-        <a href="{{ route('admin.dashboard') }}" class="mr-4 text-blue-500">Dashboard</a>
-        <a href="{{ route('admin.suppliers.index') }}" class="mr-4 text-blue-500">Supplier</a>
-        <form method="POST" action="{{ route('logout') }}" class="inline">
-          @csrf
-          <button type="submit" class="text-red-500">Logout</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-
+@section('content')
   <div class="container mx-auto p-6">
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-2xl font-bold mb-6">Edit Supplier: {{ $supplier->name }}</h2>
@@ -83,6 +62,4 @@
       </form>
     </div>
   </div>
-</body>
-
-</html>
+@endsection
