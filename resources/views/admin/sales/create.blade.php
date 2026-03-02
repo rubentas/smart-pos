@@ -3,6 +3,8 @@
 @section('title', 'POS - Point of Sale')
 
 @section('styles')
+  <!-- QuaggaJS untuk barcode scanner -->
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
   <style>
     .pos-container {
       display: grid;
@@ -116,6 +118,8 @@
 
     .search-box {
       margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
     }
   </style>
 @endsection
@@ -132,8 +136,10 @@
           <div class="card-body">
             <!-- Search Bar -->
             <div class="search-box">
-              <input type="text" id="searchProduct" class="form-control"
-                placeholder="Cari nama produk atau scan barcode...">
+              <input type="text" id="searchProduct" class="form-control" placeholder="Cari nama produk...">
+              <button type="button" id="scanBarcodeBtn" class="btn btn-primary">
+                <i class="fas fa-camera"></i> Scan
+              </button>
             </div>
 
             <!-- Product Grid -->
@@ -216,6 +222,25 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Scanner Barcode -->
+  <div class="modal fade" id="scannerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Scan Barcode Produk</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="scanner-container" style="width: 100%; height: 300px;"></div>
+          <div id="scanner-result" class="mt-3"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 @section('scripts')
@@ -246,6 +271,7 @@
       });
     });
 
+    // Add product to cart when clicked
     document.querySelectorAll('.product-card').forEach(card => {
       card.addEventListener('click', function() {
         const productId = parseInt(this.dataset.id);
@@ -412,7 +438,6 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-      // Send to server
       fetch('{{ route('sales.store') }}', {
           method: 'POST',
           headers: {
@@ -440,5 +465,63 @@
           btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Proses Pembayaran';
         });
     });
+
+    // ============= BARCODE SCANNER =============
+    document.getElementById('scanBarcodeBtn').addEventListener('click', function() {
+      $('#scannerModal').modal('show');
+
+      setTimeout(function() {
+        Quagga.init({
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#scanner-container'),
+            constraints: {
+              width: 640,
+              height: 320,
+              facingMode: "environment"
+            },
+          },
+          decoder: {
+            readers: ["code_128_reader", "ean_reader", "ean_8_reader", "upc_reader"]
+          }
+        }, function(err) {
+          if (err) {
+            console.log(err);
+            document.getElementById('scanner-result').innerHTML =
+              '<div class="alert alert-danger">Gagal mengakses kamera: ' + err + '</div>';
+            return;
+          }
+          Quagga.start();
+        });
+
+        Quagga.onDetected(function(data) {
+          let code = data.codeResult.code;
+          document.getElementById('scanner-result').innerHTML =
+            '<div class="alert alert-success">Barcode terdeteksi: ' + code + '</div>';
+
+          // Cari produk berdasarkan barcode
+          cariProdukByBarcode(code);
+
+          setTimeout(function() {
+            Quagga.stop();
+            $('#scannerModal').modal('hide');
+          }, 1500);
+        });
+      }, 500);
+    });
+
+    // Fungsi cari produk via AJAX
+    function cariProdukByBarcode(barcode) {
+      fetch('/admin/products/search-by-barcode?barcode=' + barcode)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            addToCart(data.product.id, data.product.name, data.product.selling_price, data.product.stock);
+          } else {
+            alert('Produk dengan barcode ' + barcode + ' tidak ditemukan!');
+          }
+        });
+    }
   </script>
 @endsection

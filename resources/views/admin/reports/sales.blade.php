@@ -21,8 +21,12 @@
               <i class="fas fa-search me-1"></i> Tampilkan
             </button>
             <a href="{{ route('admin.reports.sales', ['start_date' => $startDate, 'end_date' => $endDate, 'export' => 'pdf']) }}"
-              class="btn btn-danger" target="_blank">
-              <i class="fas fa-file-pdf me-1"></i> Export PDF
+              class="btn btn-danger me-2" target="_blank">
+              <i class="fas fa-file-pdf me-1"></i> PDF
+            </a>
+            <a href="{{ route('admin.reports.sales', ['start_date' => $startDate, 'end_date' => $endDate, 'export' => 'excel']) }}"
+              class="btn btn-success">
+              <i class="fas fa-file-excel me-1"></i> Excel
             </a>
           </div>
         </form>
