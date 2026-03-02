@@ -83,4 +83,27 @@ class ProductController extends Controller
     return redirect()->route('admin.products.index')
       ->with('success', 'Produk berhasil dihapus');
   }
+
+  // Pencarian produk by barcode
+  public function searchByBarcode(Request $request)
+  {
+    $barcode = $request->barcode;
+    $product = Product::where('barcode', $barcode)
+      ->where('branch_id', session('active_branch'))
+      ->first();
+
+    if ($product) {
+      return response()->json([
+        'success' => true,
+        'product' => [
+          'id' => $product->id,
+          'name' => $product->name,
+          'selling_price' => $product->selling_price,
+          'stock' => $product->stock
+        ]
+      ]);
+    }
+
+    return response()->json(['success' => false]);
+  }
 }

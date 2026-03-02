@@ -10,6 +10,11 @@ use App\Models\StockLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\SalesExport;
+// use App\Exports\PurchasesExport;
+// use App\Exports\StockExport;
+// use App\Exports\ProfitLossExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
