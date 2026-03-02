@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ReturnController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,8 +20,12 @@ Route::get('/', function () {
 
 // Rute untuk dashboard (redirect berdasarkan role)
 Route::get('/dashboard', function () {
-  if (auth()->user()->role->name === 'Admin') {
+  $user = auth()->user();
+
+  if ($user->role->name === 'Admin') {
     return redirect()->route('admin.dashboard');
+  } elseif ($user->role->name === 'Owner') {
+    return redirect()->route('owner.dashboard');
   }
   return redirect()->route('cashier.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -46,6 +51,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
   // Products
   Route::resource('products', ProductController::class);
 
+  // Products search by barcode (UNTUK SCANNER)
+  Route::get('/products/search-by-barcode', [ProductController::class, 'searchByBarcode'])->name('products.search-barcode');
+
   // Suppliers
   Route::resource('suppliers', SupplierController::class);
 
@@ -69,7 +77,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/profit-loss', [ReportController::class, 'profitLoss'])->name('profit-loss');
   });
 
-  // BRANCHES - TAMBAHKAN INI
+  // BRANCHES
   Route::resource('branches', BranchController::class);
 });
 
@@ -82,6 +90,11 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('cashier')->name('cashier.')->
   // Kasir juga bisa akses POS
   Route::get('/pos', [SaleController::class, 'create'])->name('pos');
   Route::post('/pos', [SaleController::class, 'store'])->name('pos.store');
+});
+
+// Rute untuk OWNER
+Route::middleware(['auth', 'role:Owner'])->prefix('owner')->name('owner.')->group(function () {
+  Route::get('/dashboard', [OwnerDashboardController::class, 'index'])->name('dashboard');
 });
 
 require __DIR__ . '/auth.php';
