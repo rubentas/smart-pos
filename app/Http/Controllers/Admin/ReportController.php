@@ -29,11 +29,16 @@ class ReportController extends Controller
     $request->validate([
       'start_date' => 'required|date',
       'end_date' => 'required|date|after_or_equal:start_date',
-    ]);
+    ])
 
     $startDate = $request->start_date;
     $endDate = $request->end_date;
 
+      if ($request->export == 'excel') {
+        return Excel::download(new SalesExport($startDate, $endDate), 
+            'laporan-penjualan-'.$startDate.'-'.$endDate.'.xlsx');
+    }
+    
     // Data penjualan
     $sales = Sale::with('user', 'details.product')
       ->where('branch_id', session('active_branch'))
